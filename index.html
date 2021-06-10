@@ -1,0 +1,79 @@
+<html>
+<head>
+<style id='style'></style>
+<style>
+.button0 {
+  background-color: #ff8400;
+  border: 2px solid #ff8400;
+  border-radius: 12px;
+  color: #ffffff;
+  padding: 8px 22px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  transition-duration: 0.4s;
+}
+.button0:hover {
+  background-color: #ffffff; 
+  color: black;
+  box-shadow: 0 12px 16px 0 rgba(0,0,0,0.24), 0 17px 50px 0 rgba(0,0,0,0.19);
+  cursor:pointer;
+}
+</style>
+<link rel="stylesheet" href="data/codemirror.css">
+<link rel="stylesheet" href="data/all-themes.css">
+<script src="data/codemirror.js"></script>
+<script src="data/FileSaver.js"></script>
+<script src="data/all.js"></script>
+<script src="data/jszip.js"></script>
+</head>
+<body>
+<iframe frameBorder="0" style="float:right" id='display'></iframe>
+<textarea id='nose'></textarea>
+<button class="button button0" onclick="displayIframe()">Display HTML</button><br><br>
+<button class="button button0" onclick="downloadZip()">Download file as zip</button><br><br>
+<button class="button button0" onclick="fullDocument()">Open displayed file in new tab</button>
+
+<script>
+  var myTextarea = document.getElementById('nose')
+  var editor = CodeMirror.fromTextArea(myTextarea, {
+    indentUnit: 4,
+    mode: 'htmlmixed',
+    lineNumbers: true,
+    styleActiveLine: true,
+    matchBrackets: true
+  });
+function displayIframe() {
+    editor.save()
+    var data = myTextarea.value
+    const blob = new Blob([data], {type : 'text/html'});
+    var url = URL.createObjectURL(blob)
+    document.getElementById('display').src = url
+}
+function fullDocument() {
+    displayIframe()
+    window.open(document.getElementById('display').src)
+}
+function downloadZip() {
+    editor.save()
+    var data = myTextarea.value
+    var zip = new JSZip();
+    zip.file("index.html", data);
+    zip.generateAsync({type:"blob"})
+    .then(function(content) {
+        saveAs(content, "html.zip")
+    })
+}
+function setscreensize() {
+    var width = window.innerWidth
+    var height = window.innerHeight
+    document.getElementById('style').innerHTML = ".CodeMirror {width: "+width/2+"px;}"
+    document.getElementById('display').width = width/2 - 30
+    document.getElementById('display').height = height - 30
+}
+window.onresize = setscreensize
+window.onload = setscreensize()
+</script>
+</body>
+</html>
